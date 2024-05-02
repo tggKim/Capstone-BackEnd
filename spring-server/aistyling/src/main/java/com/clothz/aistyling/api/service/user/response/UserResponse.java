@@ -3,15 +3,17 @@ package com.clothz.aistyling.api.service.user.response;
 import com.clothz.aistyling.domain.user.User;
 import lombok.Builder;
 
-public record UserResponse(String nickname) {
+public record UserResponse(String email, String nickname) {
     @Builder
-    public UserResponse(String nickname){
+    public UserResponse(String email, String nickname){
+        this.email = email;
         this.nickname = nickname;
     }
 
     public static UserResponse from(User user) {
         return UserResponse.builder()
-                .nickname(user.getEmail())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
                 .build();
     }
 }

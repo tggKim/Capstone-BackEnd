@@ -47,7 +47,7 @@ public class UserService {
             throw new DuplicateKeyException("Email already exists");
         });
     }
-    
+
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(Long id) throws JsonProcessingException {
         final User user = userRepository.findById(id).orElseThrow(
@@ -58,6 +58,8 @@ public class UserService {
     }
 
     private List<String> deserializeImageUrls(User user) throws JsonProcessingException {
+        if(user.getUserImages() == null)
+            return List.of();
         return objectMapper.readValue(user.getUserImages(), new TypeReference<List<String>>() {});
     }
 }

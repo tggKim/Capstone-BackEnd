@@ -5,16 +5,13 @@ import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
 import com.clothz.aistyling.domain.user.constant.UserRole;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
@@ -23,13 +20,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,6 +38,7 @@ class UserControllerTest {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
     private static final String EMAIL = "user12@gmail.com";
+    private static final String ANOTHER_EMAIL = "user34@gmail.com";
     private static final String PASSWORD = "password1!";
     private static final String NICKNAME = "nickname";
 
@@ -63,6 +59,8 @@ class UserControllerTest {
 
     @Autowired
     private PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    @Autowired
+    private UserController userController;
 
     @BeforeEach
     void beforeEach() {
@@ -70,17 +68,23 @@ class UserControllerTest {
                     .nickname(NICKNAME)
                     .email(EMAIL)
                     .password(delegatingPasswordEncoder.encode(PASSWORD))
+                    .userImages("[\"image1.png\", \"image2.png\"]")
                     .userRole(UserRole.USER)
                     .build();
             userRepository.save(user);
             clear();
+    }
+
+    private void clear() {
+        em.flush();
+        em.clear();
     }
         
     @DisplayName("회원 가입에 성공한다.")
     @Test
     void signUp() throws Exception {
         //given
-        UserCreateRequest request = createUser(EMAIL, NICKNAME, PASSWORD);
+        UserCreateRequest request = createUser(ANOTHER_EMAIL, NICKNAME, PASSWORD);
         
         //when
         //then
@@ -96,7 +100,7 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message").value("OK"));
     }
 
-    @DisplayName("회원 가입할 때 이메일은 이메일 형식으로 작성헤야 한다.")
+    @DisplayName("회원 가입할 때 이메일은 이메일 형식으로 작성해야 한다.")
     @Test
     void signUpWithEmailFormat() throws Exception{
         //given
@@ -213,12 +217,6 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("UNAUTHORIZED"))
                 .andExpect(jsonPath("$.message").value("Bad credentials"))
                 .andExpect(jsonPath("$.data").isEmpty());
-
-
-    }
-    private void clear() {
-        em.flush();
-        em.clear();
     }
 
     private UserCreateRequest createUser(String email, String nickname, String password) {

@@ -1,27 +1,65 @@
 package com.clothz.aistyling.api.service.user;
 
 import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
-import com.clothz.aistyling.api.service.user.response.UserResponse;
+import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
+import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
+import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
+import com.clothz.aistyling.domain.user.constant.UserRole;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
+@Transactional
 class UserServiceTest {
     private static final String EMAIL = "user12@gmail.com";
+    private static final String SAME_EMAIL = "user12@gmail.com";
+    private static final String ANOTHER_EMAIL = "user34@gmail.com";
+    private static final String NICKNAME = "user";
     private static final String PASSWORD = "password1!";
-    private static final String NICKNAME = "nickname";
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager em;
+
+    @Autowired
+    private PasswordEncoder delegatingPasswordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
+    @BeforeEach
+    void beforeEach() {
+        User user = User.builder()
+                .nickname(NICKNAME)
+                .email(EMAIL)
+                .password(delegatingPasswordEncoder.encode(PASSWORD))
+                .userRole(UserRole.USER)
+                .userImages("[\"image1.png\", \"image2.png\"]")
+                .build();
+        userRepository.save(user);
+        clear();
+    }
+
+    private void clear() {
+        em.flush();
+        em.clear();
+    }
 
     @AfterEach
     void tearDown() {
@@ -34,15 +72,50 @@ class UserServiceTest {
         //given
         final UserCreateRequest request = UserCreateRequest.builder()
                 .nickname(NICKNAME)
-                .email(EMAIL)
+                .email(ANOTHER_EMAIL)
                 .password(PASSWORD)
                 .build();
 
         //when
-        final UserResponse userResponse = userService.signUp(request);
+        final UserSingUpResponse userSingUpResponse = userService.signUp(request);
 
         //then
-        assertThat(userResponse.email()).isEqualTo(EMAIL);
-        assertThat(userResponse.nickname()).isEqualTo(NICKNAME);
+        assertThat(userSingUpResponse.email()).isEqualTo(ANOTHER_EMAIL);
+        assertThat(userSingUpResponse.nickname()).isEqualTo(NICKNAME);
+    }
+
+    @DisplayName("회원 가입을 할 때 다른 이메일이어야 한다.")
+    @Test
+    void signUpWithNoDuplicateEmail() {
+        //given
+        final UserCreateRequest request = UserCreateRequest.builder()
+                .nickname(NICKNAME)
+                .email(SAME_EMAIL)
+                .password(PASSWORD)
+                .build();
+
+        //when
+        //then
+        Assertions.assertThatThrownBy(() -> {
+                    userService.sameCheckEmail(request.email());
+                }).isInstanceOf(DuplicateKeyException.class)
+                .hasMessageContaining("Email already exists");
+    }
+
+    @DisplayName("회원 정보를 조회한다.")
+    @Test
+    void getUserInfo() throws JsonProcessingException {
+        //given
+        final User user = userRepository.findByEmail(EMAIL).orElseThrow();
+
+        //when
+        final UserInfoResponse userInfoResponse = userService.getUserInfo(user.getId());
+
+        //then
+        assertThat(userInfoResponse.email()).isEqualTo(EMAIL);
+        assertThat(userInfoResponse.nickname()).isEqualTo(NICKNAME);
+        assertThat(userInfoResponse.images())
+                .hasSize(2)
+                .containsExactlyInAnyOrder("image1.png", "image2.png");
     }
 }

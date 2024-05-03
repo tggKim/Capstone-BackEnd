@@ -42,6 +42,12 @@ public class UserService {
                 .build();
     }
 
+    public void sameCheckEmail(final String email) {
+        userRepository.findByEmail(email).ifPresent(n -> {
+            throw new DuplicateKeyException("Email already exists");
+        });
+    }
+    
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(Long id) throws JsonProcessingException {
         final User user = userRepository.findById(id).orElseThrow(

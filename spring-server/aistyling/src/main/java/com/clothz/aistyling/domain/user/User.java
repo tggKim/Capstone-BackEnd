@@ -26,20 +26,25 @@ public class User extends BaseEntity {
     @Column(nullable = false, name = "password")
     private String password;
 
-    @Column(name = "user_image")
-    private String userImage;
+    @Column(name = "user_images")
+    private String userImages;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_role")
     private UserRole userRole;
 
+    public String saveImages(final String images) {
+        this.userImages = images;
+        return this.userImages;
+    }
+
     @Builder
-    public User(final String email, final String nickname, final String password, final UserRole userRole, final String userImage) {
+    public User(final String email, final String nickname, final String password, final String userImages, final UserRole userRole) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
+        this.userImages = userImages;
         this.userRole = userRole;
-        this.userImage = userImage;
     }
 
     @Override

@@ -74,20 +74,24 @@ class UserServiceTest {
 
     @DisplayName("회원 가입을 한다.")
     @Test
-    void signUp() {
+    void signUp() throws JsonProcessingException {
         //given
         final UserCreateRequest request = UserCreateRequest.builder()
                 .nickname(NICKNAME)
                 .email(ANOTHER_EMAIL)
                 .password(PASSWORD)
                 .build();
+        final var images = List.of("image1.png", "images2.png");
 
         //when
-        final UserSingUpResponse userSingUpResponse = userService.signUp(request);
+        final UserSingUpResponse userSingUpResponse = userService.signUp(request, images);
 
         //then
         assertThat(userSingUpResponse.email()).isEqualTo(ANOTHER_EMAIL);
         assertThat(userSingUpResponse.nickname()).isEqualTo(NICKNAME);
+        assertThat(userSingUpResponse.imgUrls())
+                .hasSize(2)
+                .containsExactlyInAnyOrder("image1.png", "images2.png");
     }
 
     @DisplayName("회원 가입을 할 때 다른 이메일이어야 한다.")

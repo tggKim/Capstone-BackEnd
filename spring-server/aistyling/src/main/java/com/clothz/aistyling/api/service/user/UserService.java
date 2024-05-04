@@ -1,6 +1,6 @@
 package com.clothz.aistyling.api.service.user;
 
-import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
 import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;

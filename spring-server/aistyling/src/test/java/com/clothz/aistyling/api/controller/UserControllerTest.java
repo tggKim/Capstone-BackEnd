@@ -1,6 +1,7 @@
 package com.clothz.aistyling.api.controller;
 
-import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.UserController;
+import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
 import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
@@ -85,7 +86,7 @@ class UserControllerTest {
     void signUp() throws Exception {
         //given
         UserCreateRequest request = createUser(ANOTHER_EMAIL, NICKNAME, PASSWORD);
-        
+
         //when
         //then
         mockMvc.perform(

@@ -1,7 +1,7 @@
-package com.clothz.aistyling.api.controller;
+package com.clothz.aistyling.api.controller.user;
 
 import com.clothz.aistyling.api.ApiResponse;
-import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
 import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;

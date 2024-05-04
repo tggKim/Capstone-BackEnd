@@ -1,7 +1,6 @@
 package com.clothz.aistyling.api.service.user;
 
-import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
-import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
+import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
 import com.clothz.aistyling.domain.user.User;
@@ -18,8 +17,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

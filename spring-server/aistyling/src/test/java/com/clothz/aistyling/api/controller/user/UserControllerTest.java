@@ -1,6 +1,5 @@
-package com.clothz.aistyling.api.controller;
+package com.clothz.aistyling.api.controller.user;
 
-import com.clothz.aistyling.api.controller.user.UserController;
 import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
 import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.domain.user.User;

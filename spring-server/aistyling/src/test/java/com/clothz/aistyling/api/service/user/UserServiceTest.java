@@ -1,6 +1,7 @@
 package com.clothz.aistyling.api.service.user;
 
 import com.clothz.aistyling.api.controller.dto.request.UserCreateRequest;
+import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
 import com.clothz.aistyling.domain.user.User;
@@ -17,8 +18,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.io.IOException;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -100,6 +106,22 @@ class UserServiceTest {
                     userService.sameCheckEmail(request.email());
                 }).isInstanceOf(DuplicateKeyException.class)
                 .hasMessageContaining("Email already exists");
+    }
+
+    @DisplayName("사용자의 이미지를 업로드 한다.")
+    @Test
+    void uploadUserImg() throws IOException {
+        //given
+        final User user = userRepository.findByEmail(EMAIL).orElseThrow();
+        final var images = List.of("image1.png", "images2.png");
+
+        //when
+        final var userImagesResponse = userService.uploadUserImg(images, user.getId());
+
+        //then
+        assertThat(userImagesResponse.imgUrls())
+                .hasSize(2)
+                .containsExactlyInAnyOrder("image1.png", "images2.png");
     }
 
     @DisplayName("회원 정보를 조회한다.")

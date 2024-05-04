@@ -1,4 +1,4 @@
-package com.clothz.aistyling.api.controller.dto.request;
+package com.clothz.aistyling.api.controller.user.dto.request;
 
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.constant.UserRole;

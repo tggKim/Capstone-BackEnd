@@ -81,14 +81,11 @@ class UserServiceTest {
         final var images = List.of("image1.png", "images2.png");
 
         //when
-        final UserSingUpResponse userSingUpResponse = userService.signUp(request, images);
+        final UserSingUpResponse userSingUpResponse = userService.signUp(request);
 
         //then
         assertThat(userSingUpResponse.email()).isEqualTo(ANOTHER_EMAIL);
         assertThat(userSingUpResponse.nickname()).isEqualTo(NICKNAME);
-        assertThat(userSingUpResponse.imgUrls())
-                .hasSize(2)
-                .containsExactlyInAnyOrder("image1.png", "images2.png");
     }
 
     @DisplayName("회원 가입을 할 때 다른 이메일이어야 한다.")

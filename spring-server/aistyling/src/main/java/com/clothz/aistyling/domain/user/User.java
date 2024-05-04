@@ -33,6 +33,11 @@ public class User extends BaseEntity {
     @Column(name = "user_role")
     private UserRole userRole;
 
+    public String saveImages(final String images) {
+        this.userImages = images;
+        return this.userImages;
+    }
+
     @Builder
     public User(final String email, final String nickname, final String password, final String userImages, final UserRole userRole) {
         this.email = email;

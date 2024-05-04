@@ -1,8 +1,10 @@
 package com.clothz.aistyling.api.service.user;
 
 import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserUpdateRequest;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
+import com.clothz.aistyling.api.service.user.response.UserUpdateResponse;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
 import com.clothz.aistyling.domain.user.constant.UserRole;
@@ -22,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -140,5 +143,24 @@ class UserServiceTest {
         assertThat(userInfoResponse.images())
                 .hasSize(2)
                 .containsExactlyInAnyOrder("image1.png", "image2.png");
+    }
+
+    @DisplayName("회원 정보를 갱신 한다")
+    @Test
+    void UpdateUserInfo() throws NoSuchElementException {
+        //given
+        final User user = userRepository.findByEmail(EMAIL).orElseThrow();
+
+        String email = "user12@gmail.com";
+        String updateNickName = "updateUser";
+        String updatePassWord = "updatePassword";
+        UserUpdateRequest request = UserUpdateRequest.builder().email(email).password(updatePassWord).nickname(updateNickName).build();
+
+        //when
+        final UserUpdateResponse response = userService.updateUser(request);
+
+        //then
+        assertThat(response.password()).isEqualTo(updatePassWord);
+        assertThat(response.nickname()).isEqualTo(updateNickName);
     }
 }

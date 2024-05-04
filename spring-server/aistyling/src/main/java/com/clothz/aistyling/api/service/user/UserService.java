@@ -1,9 +1,11 @@
 package com.clothz.aistyling.api.service.user;
 
 import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserUpdateRequest;
 import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
+import com.clothz.aistyling.api.service.user.response.UserUpdateResponse;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
 import com.clothz.aistyling.domain.user.constant.UserRole;
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 @Transactional
@@ -82,6 +85,17 @@ public class UserService {
         if(null == imgUrls)
             return List.of();
         return objectMapper.readValue(imgUrls, new TypeReference<List<String>>() {});
+    }
+
+    public UserUpdateResponse updateUser(UserUpdateRequest request) throws NoSuchElementException {
+        User user = checkEmailExist(request.email());
+        return user.updateNickNamePassword(request);
+    }
+
+    public User checkEmailExist(final String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> {
+            throw new NoSuchElementException("Email does not exists");
+        });
     }
 
 }

@@ -1,5 +1,7 @@
 package com.clothz.aistyling.domain.user;
 
+import com.clothz.aistyling.api.controller.user.request.UserUpdateRequest;
+import com.clothz.aistyling.api.service.user.response.UserUpdateResponse;
 import com.clothz.aistyling.domain.BaseEntity;
 import com.clothz.aistyling.domain.user.constant.UserRole;
 import jakarta.persistence.*;
@@ -36,6 +38,12 @@ public class User extends BaseEntity {
     public String saveImages(final String images) {
         this.userImages = images;
         return this.userImages;
+    }
+
+    public UserUpdateResponse updateNickNamePassword(UserUpdateRequest request){
+        this.nickname = request.nickname();
+        this.password = request.password();
+        return UserUpdateResponse.builder().email(this.email).nickname(this.nickname).password(this.password).build();
     }
 
     @Builder

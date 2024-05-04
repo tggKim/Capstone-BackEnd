@@ -27,9 +27,12 @@ public class UserController {
     private final UserService userService;
     private final S3Service s3Service;
 
-    @PostMapping("/signup")
-    public ApiResponse<UserSingUpResponse> signUp(@RequestBody @Valid final UserCreateRequest request) {
-        final var userSingUpResponse = userService.signUp(request);
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiResponse<UserSingUpResponse> signUp(
+            @RequestBody @Valid final UserCreateRequest request,
+            final List<MultipartFile> images) throws IOException {
+        final var imgUrls = s3Service.upload(images);
+        final var userSingUpResponse = userService.signUp(request, imgUrls);
         return ApiResponse.ok(userSingUpResponse);
     }
 
@@ -42,14 +45,14 @@ public class UserController {
         return ApiResponse.ok(userInfoResponse);
     }
 
-    @PostMapping(value = "/users/img", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/users/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ROLE_USER')")
     public ApiResponse<UserImagesResponse> uploadUserImg(
             final List<MultipartFile> images,
             @AuthenticationPrincipal final CustomUserDetails userDetails
     ) throws IOException {
-        final var imagesURL = s3Service.upload(images);
-        final var userImagesResponse = userService.uploadUserImg(imagesURL, userDetails.getId());
+        final var imgUrls = s3Service.upload(images);
+        final var userImagesResponse = userService.uploadUserImg(imgUrls, userDetails.getId());
         return ApiResponse.ok(userImagesResponse);
     }
 }

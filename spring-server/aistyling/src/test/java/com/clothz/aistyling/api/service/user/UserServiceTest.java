@@ -157,10 +157,11 @@ class UserServiceTest {
         UserUpdateRequest request = UserUpdateRequest.builder().email(email).password(updatePassWord).nickname(updateNickName).build();
 
         //when
-        final UserUpdateResponse response = userService.updateUser(request);
+        userService.updateUser(request);
+        final User updateUser = userRepository.findByEmail(EMAIL).orElseThrow();
 
         //then
-        assertThat(response.password()).isEqualTo(updatePassWord);
-        assertThat(response.nickname()).isEqualTo(updateNickName);
+        assertThat(updateUser.getPassword()).isEqualTo(updatePassWord);
+        assertThat(updateUser.getNickname()).isEqualTo(updateNickName);
     }
 }

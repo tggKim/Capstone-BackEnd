@@ -3,7 +3,6 @@ package com.clothz.aistyling.global.jwt.filter;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
 import com.clothz.aistyling.global.jwt.JwtProvider;
-import com.clothz.aistyling.global.jwt.PasswordUtil;
 import com.clothz.aistyling.global.jwt.userInfo.CustomUserDetails;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,9 +58,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 
     private void saveAuthentication(final User myUser) {
         String password = myUser.getPassword();
-        if (null == password) {
-            password = PasswordUtil.generateRandomPassword();
-        }
 
         final UserDetails userDetailsUser = org.springframework.security.core.userdetails.User.builder()
                 .username(myUser.getEmail())

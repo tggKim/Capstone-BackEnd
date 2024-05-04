@@ -5,19 +5,17 @@ import lombok.Builder;
 
 import java.util.List;
 
-public record UserSingUpResponse(String email, String nickname, List<String> imgUrls) {
+public record UserSingUpResponse(String email, String nickname) {
     @Builder
-    public UserSingUpResponse(String email, String nickname, List<String> imgUrls) {
+    public UserSingUpResponse(String email, String nickname) {
         this.email = email;
         this.nickname = nickname;
-        this.imgUrls = imgUrls;
     }
 
-    public static UserSingUpResponse of(User user, List<String> imgUrls) {
+    public static UserSingUpResponse from(User user) {
         return UserSingUpResponse.builder()
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .imgUrls(imgUrls)
                 .build();
     }
 }

@@ -28,13 +28,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final ObjectMapper objectMapper;
 
-    public UserSingUpResponse signUp(final UserCreateRequest request, final List<String> imgUrls) throws JsonProcessingException {
-        sameCheckEmail(request.email());
+    public UserSingUpResponse signUp(final UserCreateRequest request) {
         final String encodePassword = passwordEncoder.encode(request.password());
-        final String serializedImages = serializeImages(imgUrls);
-        final User user = userRepository.save(createUserEntity(request, encodePassword, serializedImages));
-        final var deserializedImages = deserializeImageUrls(user.getUserImages());
-        return UserSingUpResponse.of(user, deserializedImages);
+        final User user = userRepository.save(createUserEntity(request, encodePassword));
+        return UserSingUpResponse.from(user);
     }
 
     public void sameCheckEmail(final String email) {
@@ -43,13 +40,12 @@ public class UserService {
         });
     }
 
-    private User createUserEntity(final UserCreateRequest request, final String encodePassword, final String imgUrls) throws JsonProcessingException {
+    private User createUserEntity(final UserCreateRequest request, final String encodePassword){
         return User.builder()
                 .email(request.email())
                 .nickname(request.nickname())
                 .password(encodePassword)
                 .userRole(UserRole.USER)
-                .userImages(imgUrls)
                 .build();
     }
 

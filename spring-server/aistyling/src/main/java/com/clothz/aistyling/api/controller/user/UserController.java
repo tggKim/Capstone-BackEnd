@@ -11,6 +11,7 @@ import com.clothz.aistyling.global.s3.S3Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,16 +24,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api")
 @RestController
+@Slf4j
 public class UserController {
     private final UserService userService;
     private final S3Service s3Service;
 
-    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping("/signup")
     public ApiResponse<UserSingUpResponse> signUp(
-            @RequestBody @Valid final UserCreateRequest request,
-            final List<MultipartFile> images) throws IOException {
-        final var imgUrls = s3Service.upload(images);
-        final var userSingUpResponse = userService.signUp(request, imgUrls);
+            @RequestBody @Valid
+            final UserCreateRequest request){
+        final var userSingUpResponse = userService.signUp(request);
         return ApiResponse.ok(userSingUpResponse);
     }
 

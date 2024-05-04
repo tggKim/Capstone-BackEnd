@@ -40,10 +40,12 @@ public class User extends BaseEntity {
         return this.userImages;
     }
 
-    public UserUpdateResponse updateNickNamePassword(UserUpdateRequest request){
-        this.nickname = request.nickname();
-        this.password = request.password();
-        return UserUpdateResponse.builder().email(this.email).nickname(this.nickname).password(this.password).build();
+    public void updatePassword(String password){
+        this.password=password;
+    }
+
+    public void updateNickname(String nickname){
+        this.nickname=nickname;
     }
 
     @Builder

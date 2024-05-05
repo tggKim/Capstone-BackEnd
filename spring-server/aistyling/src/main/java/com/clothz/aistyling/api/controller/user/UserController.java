@@ -2,10 +2,12 @@ package com.clothz.aistyling.api.controller.user;
 
 import com.clothz.aistyling.api.ApiResponse;
 import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserUpdateRequest;
 import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.api.service.user.response.UserImagesResponse;
 import com.clothz.aistyling.api.service.user.response.UserInfoResponse;
 import com.clothz.aistyling.api.service.user.response.UserSingUpResponse;
+import com.clothz.aistyling.api.service.user.response.UserUpdateResponse;
 import com.clothz.aistyling.global.jwt.userInfo.CustomUserDetails;
 import com.clothz.aistyling.global.s3.S3Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -55,5 +57,11 @@ public class UserController {
         final var imgUrls = s3Service.upload(images);
         final var userImagesResponse = userService.uploadUserImg(imgUrls, userDetails.getId());
         return ApiResponse.ok(userImagesResponse);
+    }
+
+    @PutMapping("/users")
+    public ApiResponse<UserUpdateResponse> updateUser(@RequestBody UserUpdateRequest request){
+        UserUpdateResponse response = userService.updateUser(request);
+        return ApiResponse.ok(response);
     }
 }

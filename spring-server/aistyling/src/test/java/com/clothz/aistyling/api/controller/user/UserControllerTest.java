@@ -1,6 +1,7 @@
 package com.clothz.aistyling.api.controller.user;
 
 import com.clothz.aistyling.api.controller.user.request.UserCreateRequest;
+import com.clothz.aistyling.api.controller.user.request.UserUpdateRequest;
 import com.clothz.aistyling.api.service.user.UserService;
 import com.clothz.aistyling.domain.user.User;
 import com.clothz.aistyling.domain.user.UserRepository;
@@ -20,6 +21,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedHashMap;
@@ -217,6 +219,33 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.status").value("UNAUTHORIZED"))
                 .andExpect(jsonPath("$.message").value("Bad credentials"))
                 .andExpect(jsonPath("$.data").isEmpty());
+    }
+
+    @DisplayName("회원 정보 수정에 성공한다")
+    @Test
+    void updateUserTest() throws Exception{
+        //given
+        UserUpdateRequest request = UserUpdateRequest
+                .builder()
+                .email(EMAIL)
+                .nickname("updateNickname")
+                .password("updatePassword")
+                .build();
+
+        //when
+        //then
+        mockMvc.perform(
+                        MockMvcRequestBuilders.put("/api/users")
+                                .content(objectMapper.writeValueAsString(request))
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value("200"))
+                .andExpect(jsonPath("$.status").value("OK"))
+                .andExpect(jsonPath("$.message").value("OK"))
+                .andExpect(jsonPath("$.data.nickname").value("updateNickname"))
+                .andExpect(jsonPath("$.data.password").value("updatePassword"));
     }
 
     private UserCreateRequest createUser(String email, String nickname, String password) {

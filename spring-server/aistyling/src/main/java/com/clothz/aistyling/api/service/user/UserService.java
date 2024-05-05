@@ -89,8 +89,12 @@ public class UserService {
 
     public UserUpdateResponse updateUser(UserUpdateRequest request) throws NoSuchElementException {
         User user = checkEmailExist(request.email());
-        return user.updateNickNamePassword(request);
+        user.updateNickname(request.nickname());
+        user.updatePassword(request.password());
+        User updateUser = userRepository.save(user);
+        return UserUpdateResponse.of(user);
     }
+
 
     public User checkEmailExist(final String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> {
